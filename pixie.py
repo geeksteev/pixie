@@ -55,6 +55,18 @@ def stop_vm(node, vmid, request):
     r = requests.post(url, headers=header, cookies=cookie, verify=False)
     return r.status_code
 
+def delete_vm(node, vmid, request):
+    url = "https://" + node + ":8006/api2/json/nodes/proxmox/lxc/" + vmid 
+    header = {
+        'CSRFPreventionToken': request[0]
+    }
+    cookie = {
+        'PVEAuthCookie': request[1]
+    }
+    
+    r = requests.delete(url, headers=header, cookies=cookie, verify=False)
+    return r.status_code    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -65,4 +77,4 @@ if __name__ == "__main__":
     
 args = parser.parse_args()
 
-print(stop_vm(args.node, args.id, proxmox_session(args.username, args.password, args.node)))
+print(delete_vm(args.node, args.id, proxmox_session(args.username, args.password, args.node)))
