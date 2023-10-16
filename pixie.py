@@ -3,7 +3,7 @@ import argparse
 
 requests.packages.urllib3.disable_warnings()    # Supress SSL warnings (until I issue a cert to Proxmox...me hopes)
 
-def proxmox_session(username, password):    # Request and return cookies for authentication
+def proxmox_session(username, password, node):    # Request and return cookies for authentication
 #               .---. .---. 
 #              :     : o   :    COOOOKIE!
 #          _..-:   o :     :-.._    /
@@ -20,7 +20,7 @@ def proxmox_session(username, password):    # Request and return cookies for aut
 #  ;         '       "       '     . ; .' ; ; ;
 # ;     '         '       '   "    .'      .-'
 # '  "     "   '      "           "    _.-'
-    url = 'https://192.168.1.10:8006/api2/json/access/ticket'   # Builds the ticket request URL
+    url = 'https://' + node + ':8006/api2/json/access/ticket'   # Builds the ticket request URL
     
     creds = {   # Places the creds into a dictionary
         'username':username,
@@ -31,17 +31,29 @@ def proxmox_session(username, password):    # Request and return cookies for aut
     
     return r.json()['data']['CSRFPreventionToken'], r.json()['data']['ticket'] # Returns the Cookie and CSRF Prevention Token
 
-# def get_vm_info(cookie):  # Lists VM or Container information. (Note: Proxmox refers to both VMs and Containers as "VMs")
-#     url = 'https://192.168.1.10:8006/api2/json/cluster/resources/proxmox/'
-#     r = requests.session().get(url, cookies=cookie, verify=False)
-#     print(r.json())
-
-def delete_vm(cookie):
-    url = 'https://192.168.1.10:8006/api2/json/api2/json/nodes/proxmox/lxc/211'
-
-    delete = requests.session().get(url, cookies=cookie, verify=False)
+def start_vm(node, vmid, request):
+    url = "https://" + node + ":8006/api2/json/nodes/proxmox/lxc/" + vmid + "/status/start" 
+    header = {
+        'CSRFPreventionToken': request[0]
+    }
+    cookie = {
+        'PVEAuthCookie': request[1]
+    }
     
-    return delete.status_code
+    r = requests.post(url, headers=header, cookies=cookie, verify=False)
+    return r.status_code
+
+def stop_vm(node, vmid, request):
+    url = "https://" + node + ":8006/api2/json/nodes/proxmox/lxc/" + vmid + "/status/stop" 
+    header = {
+        'CSRFPreventionToken': request[0]
+    }
+    cookie = {
+        'PVEAuthCookie': request[1]
+    }
+    
+    r = requests.post(url, headers=header, cookies=cookie, verify=False)
+    return r.status_code
 
 
 if __name__ == "__main__":
@@ -53,4 +65,4 @@ if __name__ == "__main__":
     
 args = parser.parse_args()
 
-delete_vm(proxmox_session(args.username, args.password))
+print(stop_vm(args.node, args.id, proxmox_session(args.username, args.password, args.node)))
