@@ -67,7 +67,6 @@ def delete_vm(node, vmid, request):
     r = requests.delete(url, headers=header, cookies=cookie, verify=False)
     return r.status_code    
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--username', help='Enter the username.', required=True)
@@ -77,4 +76,3 @@ if __name__ == "__main__":
     
 args = parser.parse_args()
 
-print(delete_vm(args.node, args.id, proxmox_session(args.username, args.password, args.node)))
