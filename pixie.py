@@ -67,6 +67,40 @@ def delete_vm(node, vmid, request):
     r = requests.delete(url, headers=header, cookies=cookie, verify=False)
     return r.status_code    
 
+def create_container(node, vmid, request):
+    url = "https://" + node + ":8006/api2/json/nodes/proxmox/lxc/" 
+    
+    header = {
+        'CSRFPreventionToken': request[0]
+    }
+    cookie = {
+        'PVEAuthCookie': request[1]
+    }
+    
+    container_data = {
+        'net0' : 'name=eth0,bridge=vmbr0',
+        'ostemplate': 'Data:vztmpl/ubuntu-23.04-standard_23.04-1_amd64.tar.gz',
+        'storage': 'Data',
+        'vmid': vmid
+    }
+    
+    r = requests.post(url, headers=header, cookies=cookie, data=container_data, verify=False)
+    
+    return r.status_code
+
+def get_vm_info(node, vmid, request):
+    url = "https://" + node + ":8006/api2/json/nodes/proxmox/lxc/302/status" 
+    header = {
+        'CSRFPreventionToken': request[0]
+    }
+    cookie = {
+        'PVEAuthCookie': request[1]
+    }
+    r = requests.get(url, headers=header, cookies=cookie, verify=False)
+    
+    print(r.content) 
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--username', help='Enter the username.', required=True)
@@ -75,4 +109,3 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--id', help='Enter the VM ID', required=False)
     
 args = parser.parse_args()
-
