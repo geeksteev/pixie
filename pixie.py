@@ -10,7 +10,7 @@ def proxmox_session(username, password, node):    # Request and return cookies f
 #      .-''  '  `---' `---' "   ``-.    
 #    .'   "   '  "  .    "  . '  "  `.  
 #   :   '.---.,,.,...,.,.,.,..---.  ' ;
-#   `. " `.                     .' " .'      <-- Cookie Monster (nom)
+#   `. " `.                     .' " .'     
 #    `.  '`.                   .' ' .'
 #     `.    `-._           _.-' "  .'  .----.
 #       `. "    '"--...--"'  . ' .'  .'  o   `.
